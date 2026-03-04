@@ -26,14 +26,6 @@ stages:
 
   # Put your custom actions below this comment
 
-  - name: network-manager-setup
-    type: shell
-    commands:
-    - apt-get install -y network-manager network-manager-openvpn
-    - cp /etc/network/interfaces /etc/network/interfaces.backup
-    - echo '# Network Manager is now handling network interfaces' > /etc/network/interfaces
-    - systemctl enable NetworkManager
-
   - name: plasma-desktop-install
     type: apt
     sources:
