@@ -21,8 +21,15 @@ stages:
   - name: init-setup
     type: shell
     commands:
-    - lpkg --unlock
+    - echo 'PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"' > /etc/environment
+    - sed -i '4,10d' /etc/profile
     - apt-get update
+    - apt-get clean
+    - apt-get install -y squashfs-tools minisign
+    - mkdir -p /usr/bin
+    - curl -L https://github.com/Vanilla-OS/vanilla-tools/releases/download/v1.0.1/vanilla-tools-amd64.tar.gz | tar -xz -C /usr/bin
+    - chmod +x /usr/bin/lpkg
+    - lpkg --unlock
 
   # Put your custom actions below this comment
 
@@ -49,6 +56,29 @@ stages:
     - apt-get autopurge -y
     - update-desktop-database
 
+  - name: vanilla-modules
+    type: includes
+    includes:
+      - modules/00-vanilla-desktop-base.yml
+      - modules/00-vanilla-backgrounds.yml
+      - modules/00-vanilla-first-setup.yml
+      - modules/00-vanilla-system-operator.yml
+      - modules/00-vanilla-apx-wrapper.yml
+      - modules/00-vanilla-tour.yml
+      - modules/00-vanilla-sideload.yml
+      - modules/00-vanilla-updates-utility.yml
+      - modules/00-vanilla-prime-utility.yml
+      - modules/03-fswarn.yml
+      - modules/10-vanilla-abroot-rollback-notifier.yml
+      - modules/18-libs-extra.yml
+      - modules/121-disable-ssh-daemon.yml
+      - modules/130-plymouth.yml
+      - modules/131-plymouth-theme-vanilla.yml
+      - modules/140-password.yml
+      - modules/160-utilities.yml
+      - modules/997-misc-setup.yml
+      - modules/999-cleanup.yml
+
   # Put your custom actions above this comment
 
   - name: set-image-name-abroot
@@ -62,6 +92,7 @@ stages:
     - apt-get autoremove -y
     - apt-get clean
     - lpkg --lock
+    - rsync -a /etc/ /sysconf/
 
   - name: fsguard
     type: fsguard
@@ -73,9 +104,9 @@ stages:
       - name: remove-prev-fsguard
         type: shell
         commands:
-          - rm -rf /FsGuard 
-          - rm -f ./minisign.pub ./minisign.key 
-          - chmod +x /usr/sbin/init
+          - rm -rf /FsGuard
+          - rm -f ./minisign.pub ./minisign.key
+          - chmod +x /usr/share/init.d/010-fsguard.sh
 
   - name: cleanup2
     type: shell
