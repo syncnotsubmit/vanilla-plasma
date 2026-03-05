@@ -26,7 +26,19 @@ stages:
 
   # Put your custom actions below this comment
 
-  - name: plasma-desktop-install
+  - name: uninstall-gnome
+    type: shell
+    commands:
+    - apt-get purge -y gnome* 
+    - apt-get autopurge -y
+  
+  - name: install-sddm
+    type: apt
+    sources:
+      - packages:
+        - sddm
+
+  - name: install-plasma-desktop
     type: apt
     sources:
       - packages:
