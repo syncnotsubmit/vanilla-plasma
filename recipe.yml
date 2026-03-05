@@ -29,7 +29,7 @@ stages:
   - name: uninstall-gnome
     type: shell
     commands:
-    - apt-get purge -y gnome* 
+    - apt-get purge -y gnome* --allow-change-held-packages
     - apt-get autopurge -y
   
   - name: install-sddm
